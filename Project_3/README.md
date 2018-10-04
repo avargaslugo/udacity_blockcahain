@@ -1,90 +1,75 @@
-# Blockchain NanoDegree Udacity
+# Project 3 RESTful Web API with Node.js Framework sdahfilusdhf
 
-This is the third project for the blockchain Udacity nanoDegree. The idea
-is to build a RESTful API to interact with the private blockchain from project2.
-The goal is to be able to get block data and add blocks to the blockchain by
-using this APi.  
+This is the third project for the blockchain Udacity nanoDegree. The idea is to build a RESTful API to interact with the private blockchain from project2. The goal is to be able to get block data and add blocks to the blockchain by
+using this APi. In order to build the API I used hapi.js.
 
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
 
 In order to run the code one needs to install the following dependencies
 
 ```
-Give examples
+npm install --save level
+npm install --save crypto-js
+npm install --save hapi
 ```
 
-### Installing
+### Running the server
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
+In order to start running the server execute the following command
 
 ```
-Give the example
+node server.js
 ```
 
-And repeat
 
+# API Documentation
+
+`Content-Type` header for all requests is `application/json`.
+
+## GET /block/{blockHeight}
+### Description
+Retrieves blockHeight from block chain
+#### Example
+In the browser go the the following address to retrieve the genesis block
 ```
-until finished
+http://localhost:8000/block/0
 ```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
+#### Path parameter:`blockHeight: Number`
+The following path will return the block blockHeight
 ```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
+http://localhost:8000/block/blockHeight
 ```
 
-## Deployment
+In case of a successful query the representation of block will be displayed for example
+```
+http://localhost:8000/block/0
+```
+will return
+```
+{
+  "hash":"0bc06f012073f0ef32689ba83791c81da8a35656c0ab92b5f8720604d1578855",
+  "height":0,
+  "body":"First block in the chain - Genesis block",
+  "time":"1538591112",
+  "previousBlockHash":""
+}
+```
 
-Add additional notes about how to deploy this on a live system
 
-## Built With
+## POST /block
+### Description
+Creates a new block where the body is the payload of the request. The payload parameter should be called body, for example:
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
-
-## Authors
-
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+```
+'{"body":"Dummy block to test API"}'
+```
+#### Example
+```
+curl -X POST \
+  http://localhost:8000/block \
+  -H 'Cache-Control: no-cache' \
+  -H 'Content-Type: application/json' \
+  -d '{"body":"Dummy block to test API"}'
+```
+In case of a successful response the function will return a message confirming the creation of the new block. In case of the providing an empty body, the function will return a message indicating the invalid input and will not create a new block.
