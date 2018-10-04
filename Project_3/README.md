@@ -1,4 +1,4 @@
-# Project 3 RESTful Web API with Node.js Framework sdahfilusdhf
+# Project 3 RESTful Web API with Node.js Framework 
 
 This is the third project for the blockchain Udacity nanoDegree. The idea is to build a RESTful API to interact with the private blockchain from project2. The goal is to be able to get block data and add blocks to the blockchain by
 using this APi. In order to build the API I used hapi.js.
