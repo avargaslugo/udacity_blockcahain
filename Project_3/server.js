@@ -48,7 +48,7 @@ server.route({
     if (body.length>0)
     {
       // created new block
-      let b = new helperfile.Block(p)
+      let b = new helperfile.Block(body)
       // adds new block
       blockChain.addBlock(b)
       // returns message that new block was added
