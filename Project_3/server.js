@@ -20,18 +20,40 @@ const init = async () => {
 Here we create the server routes
 */
 
-
+// GET method for the default url
+server.route({
+method:
+'GET',
+path: '/',
+handler: (request, h) => {
+  msg1 = "This is the blockchain interaction service. \n"
+  msg2 = "To query a block add '/block/blockNumber' to the path in your browser"
+  return msg1 + msg2
+  }
+});
 
 // GET method to get a give block by height
 server.route({
 method: 'GET',
 path: '/block/{blockNumber}',
 handler: (request, h) => {
-  // retrives blockNumber from blockchain
-  let block = blockChain.getBlock(request.params.blockNumber)
-  //return "This is block number " + encodeURIComponent(request.params.blockNumber)
-  return block
-}
+  // reponse from the promise given by blockChain.getBlockHeight()
+  let response = blockChain.getBlockHeight().then(
+    // if resolved
+    function(blockHeight){
+      // if blockHeight is less than requiested block returns an error message
+      if (request.params.blockNumber > blockHeight){
+        msg = "Wrong request!! The Block you want hasn't been created. Current block height is " + blockHeight
+        return msg
+      }
+      else{
+        // retunr requested block
+        return blockChain.getBlock(request.params.blockNumber)
+      }
+    }
+  )
+    return response
+  }
 });
 
 /*
@@ -43,7 +65,14 @@ server.route({
   path: '/block',
   handler: (request, response) => {
     // gets variable body from payload
-    let body = request.payload.body
+    try{
+      let body = request.payload.body
+    }
+    catch(err){
+      // if body cannot be retrieved it is assigned an empty string
+      body = ""
+    }
+
     // if body is not empty
     if (body.length>0)
     {
