@@ -64,15 +64,16 @@ server.route({
   method: 'POST',
   path: '/block',
   handler: (request, response) => {
-    // gets variable body from payload
+    // body is initialized as being empty
+    let body = ""
     try{
-      let body = request.payload.body
+      // we try to re assign body to the payload
+      body = request.payload.body
     }
     catch(err){
-      // if body cannot be retrieved it is assigned an empty string
-      body = ""
+      // if body cannot be retrieved it is left as an empty string
+      console.log("There was an error! Body Was not provided")
     }
-
     // if body is not empty
     if (body.length>0)
     {
