@@ -1,7 +1,8 @@
+const utils = require("./utils.js")
 
 
 //const simpleChain = require("./simpleChain.js");
-//const helperfile = require("./helperfile.js");
+const helperfile = require("../helperfile.js");
 
 function getDefaultUrl(){
   return {
@@ -79,6 +80,42 @@ function postBlock(blockChain){
   }
 }
 
+function registerStarInBlockchain(blockChain){
+   return {
+     method: 'POST',
+     path: '/block',
+     handler: (request, response) => {
+       // body is initialized as being empty
+       let payload = request.payload
+       validPayload = utils.validateBlockchainStarPayload(payload)
+       star = payload["star"]
+       star["story"] = Buffer.from(star["story"], 'utf8').toString('hex');
+       body = JSON.stringify({"address": payload.address, "star": star})
+       console.log(body)
+
+      // if body is not empty
+      if (validPayload==true)
+      {
+        // created new block
+        let b = new helperfile.Block(body)
+        // adds new block
+        return blockChain.addBlock(b)
+        // returns message that new block was added
+        //return  "Added New Block!!!! \n"
+      }
+      // if body is empty
+      else {
+        // returns message saying the block body is empty and does NOT add the block
+        return "Incomplete payload!!!! \n"
+      }
+
+    }
+  }
+}
+
+
+
 module.exports.getDefaultUrl = getDefaultUrl;
 module.exports.getBlock = getBlock;
 module.exports.postBlock = postBlock;
+module.exports.registerStarInBlockchain = registerStarInBlockchain;

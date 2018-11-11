@@ -1,4 +1,3 @@
-
 const utils = require("./utils.js")
 
 function userRequestValidation(blockChain, addressWhiteListDict){
@@ -21,9 +20,10 @@ function userRequestValidation(blockChain, addressWhiteListDict){
       {
 
         timestamp = Math.floor(Date.now() / 1000);
-        addressWhiteListDict[address] = timestamp
+        response = utils.requestResponse(address, timestamp)
+        addressWhiteListDict[address] = response
         console.log(addressWhiteListDict)
-        return utils.requestResponse(address, timestamp)
+        return response
       }
       // if body is empty
       else {
@@ -56,11 +56,20 @@ function validateSignature(blockChain, addressWhiteListDict){
       // if body is not empty
       if (signature.length>0)
       {
-
         onTime = utils.checkExpirationInWhiteList(address, addressWhiteListDict)
-        if(!onTime){ return "It took too long or you used the wrong address"}
-        
-        return utils.requestResponse(signature, timestamp)
+        if(!onTime){
+          return "It took too long or you used the wrong address, please start again in necessary"
+        }
+        validSignature = utils.validateSignature(address, signature, addressWhiteListDict)
+        if (validSignature==true){
+          resp = utils.validSignatureResponse(address, addressWhiteListDict)
+          console.log(resp)
+          return resp
+        }
+        else {
+          return "Message signature validation failed. Please restart process again."
+        }
+
       }
       // if body is empty
       else {
@@ -75,4 +84,6 @@ function validateSignature(blockChain, addressWhiteListDict){
 
 
 
+
 module.exports.userRequestValidation = userRequestValidation;
+module.exports.validateSignature = validateSignature;

@@ -20,7 +20,7 @@ async function addLevelDBData(key, value){
                 reject(err);
             } else {
               // in case of successful save show this message
-                resolve('Added Block # ' + key + ', value: ' + value);
+                resolve(value);
             }
         });
     });
