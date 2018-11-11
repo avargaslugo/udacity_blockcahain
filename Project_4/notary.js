@@ -33,6 +33,8 @@ Here we create the server routes
 server.route(notaryRESTAPI.userRequestValidation(blockChain, addressWhiteListDict));
 server.route(notaryRESTAPI.validateSignature(blockChain, addressWhiteListDict));
 server.route(blockChainRESTAPI.registerStarInBlockchain(blockChain))
+server.route(blockChainRESTAPI.getStartsFromAddress(blockChain))
+
 //console.log(addressWhiteListDict)
 // starts server
 init()

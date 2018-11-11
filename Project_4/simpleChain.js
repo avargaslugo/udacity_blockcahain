@@ -48,7 +48,7 @@ class Blockchain {
                 // Adding block object to chain
                 let response = await helperfile.addLevelDBData(newBlock.height, JSON.stringify(newBlock).toString());
                 console.log(response);
-                return response
+                return JSON.parse(response)
             } else {
                 // Block hash with SHA256 using newBlock and converting to a string
                 newBlock.hash = SHA256(JSON.stringify(newBlock)).toString();

@@ -91,7 +91,6 @@ function registerStarInBlockchain(blockChain){
        star = payload["star"]
        star["story"] = Buffer.from(star["story"], 'utf8').toString('hex');
        body = JSON.stringify({"address": payload.address, "star": star})
-       console.log(body)
 
       // if body is not empty
       if (validPayload==true)
@@ -99,7 +98,9 @@ function registerStarInBlockchain(blockChain){
         // created new block
         let b = new helperfile.Block(body)
         // adds new block
-        return blockChain.addBlock(b)
+        resp = blockChain.addBlock(b)
+
+        return resp
         // returns message that new block was added
         //return  "Added New Block!!!! \n"
       }
@@ -114,8 +115,50 @@ function registerStarInBlockchain(blockChain){
 }
 
 
+function getStartsFromAddress(blockChain){
+
+  return {
+  method: 'GET',
+  path: '/stars/address:{address}',
+  handler: (request, h) => {
+    // reponse from the promise given by blockChain.getBlockHeight()
+    var stars = []
+    var blockNumber = 0
+    while(true){
+      blockNumber += 1
+      console.log(blockNumber)
+      let response = blockChain.getBlockHeight().then(
+        // if resolved
+        function(blockHeight){
+          // if blockHeight is less than requiested block returns an error message
+          if (blockNumber > blockHeight){
+            return false
+          }
+          else{
+            // retunr requested block
+            return blockChain.getBlock(blockNumber)
+          }
+        }
+      )
+      setTimeout(function() {console.log('Blah blah blah blah extra-blah');}, 3000);
+      console.log(response)
+      if (response==false){
+        return stars
+      }
+      else{
+        stars.push(response)
+      }
+    }
+
+
+    }
+  }
+
+}
+
 
 module.exports.getDefaultUrl = getDefaultUrl;
 module.exports.getBlock = getBlock;
 module.exports.postBlock = postBlock;
 module.exports.registerStarInBlockchain = registerStarInBlockchain;
+module.exports.getStartsFromAddress = getStartsFromAddress;
