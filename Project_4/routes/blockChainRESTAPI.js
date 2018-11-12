@@ -122,35 +122,30 @@ function getStartsFromAddress(blockChain){
   path: '/stars/address:{address}',
   handler: (request, h) => {
     // reponse from the promise given by blockChain.getBlockHeight()
-    var stars = []
     var blockNumber = 0
-    while(true){
-      blockNumber += 1
-      console.log(blockNumber)
-      let response = blockChain.getBlockHeight().then(
-        // if resolved
-        function(blockHeight){
-          // if blockHeight is less than requiested block returns an error message
-          if (blockNumber > blockHeight){
-            return false
-          }
-          else{
-            // retunr requested block
-            return blockChain.getBlock(blockNumber)
-          }
-        }
-      )
-      setTimeout(function() {console.log('Blah blah blah blah extra-blah');}, 3000);
-      console.log(response)
-      if (response==false){
-        return stars
+    var a;
+    var stars = blockChain.getBlockHeight().then(function(height)
+    {
+      blocs = []
+      i=1
+      while(i<=height){
+        let b = blockChain.getBlock(i).then(function(bod)
+        {
+          //console.log(bod)
+          return bod
+        })
+        blocs.push(b)
+        i += 1
       }
-      else{
-        stars.push(response)
-      }
-    }
+      blocs = Promise.all(blocs).then(function(value){ return value})
+      //console.log(blocs)
+      return blocs
+    })
+    console.log("This are the stars!!!")
+    console.log(stars)
 
-
+    //console.log(stars)
+    return stars//.then(function(v){return v})
     }
   }
 

@@ -2,7 +2,7 @@ var bitcoin = require('bitcoinjs-lib') // v3.x.x
 var bitcoinMessage = require('bitcoinjs-message')
 const http = require("http")
 
-const message = '1HZwkjkeaoZfTSaJxDw6aKkxp45agDiEzN:1541938997:starRegistry'
+const message = '1HZwkjkeaoZfTSaJxDw6aKkxp45agDiEzN:1541938865:starRegistry'
 var keyPair = bitcoin.ECPair.fromWIF('5KYZdUEo39z3FPrtuX2QbbwGnNP5zTd7yyr2SC1j299sBCnWjss')
 var privateKey = keyPair.privateKey
 var signature = bitcoinMessage.sign(message, privateKey, keyPair.compressed).toString('base64')
