@@ -27,14 +27,10 @@ const init = async () => {
 /*
 Here we create the server routes
 */
-//server.route(blockChainRESTAPI.getDefaultUrl());
-//server.route(blockChainRESTAPI.getBlock(blockChain));
-//server.route(blockChainRESTAPI.postBlock(blockChain));
 server.route(notaryRESTAPI.userRequestValidation(blockChain, addressWhiteListDict));
 server.route(notaryRESTAPI.validateSignature(blockChain, addressWhiteListDict));
-server.route(blockChainRESTAPI.registerStarInBlockchain(blockChain))
-server.route(blockChainRESTAPI.getStartsFromAddress(blockChain))
+server.route(blockChainRESTAPI.registerStarInBlockchain(blockChain));
+server.route(blockChainRESTAPI.getStartsFromAddress(blockChain));
+server.route(blockChainRESTAPI.getStartsFromHash(blockChain));
 
-//console.log(addressWhiteListDict)
-// starts server
 init()
