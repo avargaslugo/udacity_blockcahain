@@ -79,11 +79,9 @@ function validateBlockchainStarPayload(payload){
 return true
 }
 
-
-
-
 module.exports.requestResponse = requestResponse;
 module.exports.checkExpirationInWhiteList = checkExpirationInWhiteList;
 module.exports.validateSignature = validateSignature;
 module.exports.validSignatureResponse = validSignatureResponse;
 module.exports.validateBlockchainStarPayload = validateBlockchainStarPayload;
+module.exports.acceptedDelay = acceptedDelay;

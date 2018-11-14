@@ -4,6 +4,7 @@ File contians routes to use for interactions with the blockchain
 const utils = require("./utils.js")
 const helperfile = require("../helperfile.js");
 
+
 function registerStarInBlockchain(blockChain){
    return {
      method: 'POST',
@@ -15,7 +16,6 @@ function registerStarInBlockchain(blockChain){
        star = payload["star"]
        star["story"] = Buffer.from(star["story"], 'utf8').toString('hex');
        body = JSON.stringify({"address": payload.address, "star": star})
-
       // if body is not empty
       if (validPayload==true)
       {
@@ -23,7 +23,6 @@ function registerStarInBlockchain(blockChain){
         let b = new helperfile.Block(body)
         // adds new block
         resp = blockChain.addBlock(b)
-
         return resp
         // returns message that new block was added
         //return  "Added New Block!!!! \n"
@@ -46,15 +45,18 @@ function getStartsFromAddress(blockChain){
   path: '/stars/address:{address}',
   handler: (request, h) => {
     // reponse from the promise given by blockChain.getBlockHeight()
-    var blockNumber = 0
-    var a;
+    //var blockNumber = 0
+    //var a;
     var stars = blockChain.getBlockHeight().then(function(height)
     {
       var blocs = []
       i=1
       while(i<=height){
         let b = blockChain.getBlock(i).then(function(bod){
-          if(JSON.parse(bod["body"])["address"]==request.params.address){
+          parsedBody = JSON.parse(bod["body"])
+          if(parsedBody["address"]==request.params.address){
+            parsedBody["star"]["story"] = Buffer.from(parsedBody["star"]["story"], 'hex').toString('utf8');
+            bod["body"] = parsedBody
             return bod
           }
           })
@@ -77,9 +79,8 @@ function getStartsFromHash(blockChain){
   method: 'GET',
   path: '/stars/hash:{hash}',
   handler: (request, h) => {
-    // reponse from the promise given by blockChain.getBlockHeight()
-    var blockNumber = 0
-    var a;
+    //var blockNumber = 0
+    //var a;
     var stars = blockChain.getBlockHeight().then(function(height)
     {
       var blocs = []
@@ -87,6 +88,9 @@ function getStartsFromHash(blockChain){
       while(i<=height){
         let b = blockChain.getBlock(i).then(function(bod){
           if(bod["hash"]==request.params.hash){
+            parsedBody = JSON.parse(bod["body"])
+            parsedBody["star"]["story"] = Buffer.from(parsedBody["star"]["story"], 'hex').toString('utf8');
+            bod["body"] = parsedBody
             return bod
           }
           })
@@ -102,9 +106,37 @@ function getStartsFromHash(blockChain){
   }
 }
 
-module.exports.getDefaultUrl = getDefaultUrl;
-module.exports.getBlock = getBlock;
-module.exports.postBlock = postBlock;
+function getStartsFromBlock(blockChain){
+  return {
+  method: 'GET',
+  path: '/block/{blockNumber}',
+  handler: (request, h) => {
+    // reponse from the promise given by blockChain.getBlockHeight()
+    let response = blockChain.getBlockHeight().then(
+      // if resolved
+      function(blockHeight){
+        // if blockHeight is less than requiested block returns an error message
+        if (request.params.blockNumber > blockHeight){
+          msg = "Wrong request!! The Block you want hasn't been created. Current block height is " + blockHeight
+          return msg
+        }
+        else{
+          // retunr requested block
+          return blockChain.getBlock(request.params.blockNumber)
+        }
+      }
+    )
+      return response.then(function(bod){
+        parsedBody = JSON.parse(bod["body"])
+        parsedBody["star"]["story"] = Buffer.from(parsedBody["star"]["story"], 'hex').toString('utf8');
+        bod["body"] = parsedBody
+        return bod
+      })
+    }
+  }
+}
+
 module.exports.registerStarInBlockchain = registerStarInBlockchain;
 module.exports.getStartsFromAddress = getStartsFromAddress;
 module.exports.getStartsFromHash = getStartsFromHash;
+module.exports.getStartsFromBlock = getStartsFromBlock;

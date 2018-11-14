@@ -32,5 +32,6 @@ server.route(notaryRESTAPI.validateSignature(blockChain, addressWhiteListDict));
 server.route(blockChainRESTAPI.registerStarInBlockchain(blockChain));
 server.route(blockChainRESTAPI.getStartsFromAddress(blockChain));
 server.route(blockChainRESTAPI.getStartsFromHash(blockChain));
+server.route(blockChainRESTAPI.getStartsFromBlock(blockChain));
 
 init()

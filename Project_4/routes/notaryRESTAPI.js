@@ -18,12 +18,19 @@ function userRequestValidation(blockChain, addressWhiteListDict){
       // if body is not empty
       if (address.length>0)
       {
-
-        timestamp = Math.floor(Date.now() / 1000);
-        response = utils.requestResponse(address, timestamp)
-        addressWhiteListDict[address] = response
-        console.log(addressWhiteListDict)
-        return response
+        if(addressWhiteListDict[address] == null){
+          timestamp = Math.floor(Date.now() / 1000);
+          response = utils.requestResponse(address, timestamp)
+          addressWhiteListDict[address] = response
+          console.log(addressWhiteListDict)
+          return response
+        }
+        else if(addressWhiteListDict[address] != null){
+          timestamp = Math.floor(Date.now() / 1000);
+          newWindow = utils.acceptedDelay - timestamp + addressWhiteListDict[address]["requestTimeStamp"]
+          addressWhiteListDict[address]["validationWindow"] = newWindow
+          return addressWhiteListDict[address]
+        }
       }
       // if body is empty
       else {
