@@ -6,66 +6,73 @@ const helperfile = require("../helperfile.js");
 
 
 function registerStarInBlockchain(blockChain){
+  //function return a route definition for registering start in an already created blockchain
    return {
      method: 'POST',
      path: '/block',
      handler: (request, response) => {
        // body is initialized as being empty
        let payload = request.payload
+       // validates if payload contains the needed data
        validPayload = utils.validateBlockchainStarPayload(payload)
-       star = payload["star"]
-       star["story"] = Buffer.from(star["story"], 'utf8').toString('hex');
-       body = JSON.stringify({"address": payload.address, "star": star})
-      // if body is not empty
+      // if payload was valid
       if (validPayload==true)
       {
-        // created new block
+        star = payload["star"]
+        // encodes start story
+        star["story"] = Buffer.from(star["story"], 'utf8').toString('hex');
+        body = JSON.stringify({"address": payload.address, "star": star})
+        // created new block with star information and address as body
         let b = new helperfile.Block(body)
         // adds new block
         resp = blockChain.addBlock(b)
         return resp
-        // returns message that new block was added
-        //return  "Added New Block!!!! \n"
       }
-      // if body is empty
+      // if payload was not valid
       else {
-        // returns message saying the block body is empty and does NOT add the block
         return "Incomplete payload!!!! \n"
       }
-
     }
   }
 }
 
 
 function getStartsFromAddress(blockChain){
-
+  // function return a route to get stars from a created blockchain by address
+  // it does this by iterating over the whole blockchain and only retreiving the blocks
+  // which have the target address.
   return {
   method: 'GET',
   path: '/stars/address:{address}',
   handler: (request, h) => {
-    // reponse from the promise given by blockChain.getBlockHeight()
-    //var blockNumber = 0
-    //var a;
-    var stars = blockChain.getBlockHeight().then(function(height)
-    {
-      var blocs = []
-      i=1
-      while(i<=height){
-        let b = blockChain.getBlock(i).then(function(bod){
-          parsedBody = JSON.parse(bod["body"])
-          if(parsedBody["address"]==request.params.address){
-            parsedBody["star"]["story"] = Buffer.from(parsedBody["star"]["story"], 'hex').toString('utf8');
-            bod["body"] = parsedBody
-            return bod
-          }
+    var stars = blockChain.getBlockHeight().then(
+      function(height){
+        // initializes array of block start with the target address
+        var blocs = []
+        i=1
+        // iterates over blockchain
+        while(i<=height){
+          //gets block i
+          let b = blockChain.getBlock(i).then(function(bod){
+            // parses body of block
+            parsedBody = JSON.parse(bod["body"])
+            // checks if address is same as target
+            if(parsedBody["address"]==request.params.address){
+              // if address is same as target decodes story
+              parsedBody["star"]["story"] = Buffer.from(parsedBody["star"]["story"], 'hex').toString('utf8');
+              bod["body"] = parsedBody
+              // return block
+              return bod
+            }
           })
+        // append block to array
         blocs.push(b)
         i += 1
       }
       blocs = Promise.all(blocs).then(function(value){ return value})
       return blocs
     })
+    // only use those blocks that have a value, those with the target address
     stars = stars.then(function(a){return a.filter(function(b){return b!=null})})
     return stars
     }
@@ -75,12 +82,11 @@ function getStartsFromAddress(blockChain){
 
 
 function getStartsFromHash(blockChain){
+  // method gets the star in the block with the target hash
   return {
   method: 'GET',
   path: '/stars/hash:{hash}',
   handler: (request, h) => {
-    //var blockNumber = 0
-    //var a;
     var stars = blockChain.getBlockHeight().then(function(height)
     {
       var blocs = []
