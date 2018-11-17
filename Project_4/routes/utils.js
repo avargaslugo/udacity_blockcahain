@@ -27,7 +27,7 @@ function validSignatureResponse(address, whiteList){
     "address": address,
     "requestTimeStamp": whiteList[address]["requestTimeStamp"],
     "message": whiteList[address]["message"],
-    "validationWindow": currentTimestamp()-whiteList[address]["requestTimeStamp"],
+    "validationWindow": acceptedDelay - currentTimestamp()-whiteList[address]["requestTimeStamp"],
     "messageSignature": "valid"
   }
 }
@@ -63,20 +63,23 @@ function validateBlockchainStarPayload(payload){
     return false
   }
   if (payload.star == null){
-    console.log("no start information not provided!!")
+    console.log("no star information provided!!")
     return false
   }
 
   if (payload.star["dec"] == null){
-    console.log("no dec start information not provided!!")
+    console.log("no star dec information not provided!!")
     return false
   }
-
+  if (payload.star["ra"] == null){
+    console.log("no star ra information not provided!!")
+    return false
+  }
   if (payload.star["story"] == null){
-    console.log("no start story provided!!")
+    console.log("no star story provided!!")
     return false
   }
-  if (payload.star["story"].split(" ").length > 250){
+  if (payload.star["story"].length > 500){
     console.log("start story provided is to long!!")
     return false
   }

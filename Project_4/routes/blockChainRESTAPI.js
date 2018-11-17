@@ -35,7 +35,7 @@ function registerStarInBlockchain(blockChain, vaidatedAddresses){
       }
       // if payload was not valid
       else {
-        return "Incomplete payload!!!! \n"
+        return "Invalid payload!!!! \n"
       }
     }
   }

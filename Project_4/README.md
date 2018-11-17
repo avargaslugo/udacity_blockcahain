@@ -119,3 +119,34 @@ In case of a successful request the function will return a message to sign:
     "validationWindow": 300
 }
 ```
+
+
+## POST /message-signature/validate
+### Description
+Request verification of a signed message
+
+#### Example
+```
+curl -X POST \
+  http://localhost:8000/api/message-signature/validate \
+  -H 'Content-Type: application/json' \
+  -H 'cache-control: no-cache' \
+  -d '{
+    "address":"19xaiMqayaNrn3x7AjV5cU4Mk5f5prRVpL", "signature":"H8K4+1MvyJo9tcr2YN2KejwvX1oqneyCH+fsUL1z1WBdWmswB9bijeFfOfMqK68kQ5RO6ZxhomoXQG3fkLaBl+Q="
+}'
+```
+
+In case of a successful request the function will return a message to sign:
+
+```
+{
+    "registerStar": true,
+    "status": {
+        "address": "19xaiMqayaNrn3x7AjV5cU4Mk5f5prRVpL",
+        "requestTimeStamp": "1541605128",
+        "message": "19xaiMqayaNrn3x7AjV5cU4Mk5f5prRVpL:1541605128:starRegistry",
+        "validationWindow": 1760,
+        "messageSignature": true
+    }
+}
+```
