@@ -14,6 +14,7 @@ const port = 8000;
 // creates a new block chain object
 let blockChain = new simpleChain.Blockchain()
 var addressWhiteListDict = {}
+var validatedAddresses = {}
 
 // create server
 const server = hapi.server({host: host, port: port});
@@ -28,8 +29,8 @@ const init = async () => {
 Here we create the server routes
 */
 server.route(notaryRESTAPI.userRequestValidation(blockChain, addressWhiteListDict));
-server.route(notaryRESTAPI.validateSignature(blockChain, addressWhiteListDict));
-server.route(blockChainRESTAPI.registerStarInBlockchain(blockChain));
+server.route(notaryRESTAPI.validateSignature(blockChain, addressWhiteListDict, validatedAddresses));
+server.route(blockChainRESTAPI.registerStarInBlockchain(blockChain, validatedAddresses));
 server.route(blockChainRESTAPI.getStartsFromAddress(blockChain));
 server.route(blockChainRESTAPI.getStartsFromHash(blockChain));
 server.route(blockChainRESTAPI.getStartsFromBlock(blockChain));

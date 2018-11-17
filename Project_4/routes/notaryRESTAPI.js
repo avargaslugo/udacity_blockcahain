@@ -43,7 +43,7 @@ function userRequestValidation(blockChain, addressWhiteListDict){
 }
 
 
-function validateSignature(blockChain, addressWhiteListDict){
+function validateSignature(blockChain, addressWhiteListDict, vaidatedAddresses){
    return {
      method: 'POST',
      path: '/message-signature/validate',
@@ -51,6 +51,8 @@ function validateSignature(blockChain, addressWhiteListDict){
        // body is initialized as being empty
        let signature = ""
        let address = ""
+
+
        try{
          // we try to re assign body to the payload
          signature = request.payload.signature
@@ -60,6 +62,11 @@ function validateSignature(blockChain, addressWhiteListDict){
          // if body cannot be retrieved it is left as an empty string
         console.log("There was an error! BlockChain ID was not provided")
       }
+      // checks if the address is in the whitelist in order to continue with the process.
+      if (addressWhiteListDict[address]==null){
+        return "provided address is not in the white list; please make sure your address is correct."
+      }
+
       // if body is not empty
       if (signature.length>0)
       {
@@ -70,6 +77,10 @@ function validateSignature(blockChain, addressWhiteListDict){
         validSignature = utils.validateSignature(address, signature, addressWhiteListDict)
         if (validSignature==true){
           resp = utils.validSignatureResponse(address, addressWhiteListDict)
+          // in case of a successful validation, removes addres from white list
+          delete addressWhiteListDict[address]
+          //adds address to addresses allowed to add a star
+          vaidatedAddresses[address] = Math.floor(Date.now() / 1000)
           console.log(resp)
           return resp
         }
@@ -87,10 +98,6 @@ function validateSignature(blockChain, addressWhiteListDict){
     }
   }
 }
-
-
-
-
 
 module.exports.userRequestValidation = userRequestValidation;
 module.exports.validateSignature = validateSignature;

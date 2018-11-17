@@ -5,7 +5,7 @@ const utils = require("./utils.js")
 const helperfile = require("../helperfile.js");
 
 
-function registerStarInBlockchain(blockChain){
+function registerStarInBlockchain(blockChain, vaidatedAddresses){
   //function return a route definition for registering start in an already created blockchain
    return {
      method: 'POST',
@@ -15,17 +15,22 @@ function registerStarInBlockchain(blockChain){
        let payload = request.payload
        // validates if payload contains the needed data
        validPayload = utils.validateBlockchainStarPayload(payload)
+       validAddress = vaidatedAddresses[payload.address]
+       if((validAddress== null) || (Math.floor(Date.now() / 1000) - validAddress > utils.acceptedDelay)){
+         return "Your address has not been validated or your validation expired; please restart whole process"
+       }
       // if payload was valid
       if (validPayload==true)
       {
         star = payload["star"]
         // encodes start story
         star["story"] = Buffer.from(star["story"], 'utf8').toString('hex');
-        body = JSON.stringify({"address": payload.address, "star": star})
+        body = {"address": payload.address, "star": star}
         // created new block with star information and address as body
         let b = new helperfile.Block(body)
         // adds new block
         resp = blockChain.addBlock(b)
+        delete vaidatedAddresses[payload.address]
         return resp
       }
       // if payload was not valid
@@ -55,7 +60,7 @@ function getStartsFromAddress(blockChain){
           //gets block i
           let b = blockChain.getBlock(i).then(function(bod){
             // parses body of block
-            parsedBody = JSON.parse(bod["body"])
+            parsedBody = bod["body"]
             // checks if address is same as target
             if(parsedBody["address"]==request.params.address){
               // if address is same as target decodes story
@@ -94,7 +99,7 @@ function getStartsFromHash(blockChain){
       while(i<=height){
         let b = blockChain.getBlock(i).then(function(bod){
           if(bod["hash"]==request.params.hash){
-            parsedBody = JSON.parse(bod["body"])
+            parsedBody = bod["body"]
             parsedBody["star"]["story"] = Buffer.from(parsedBody["star"]["story"], 'hex').toString('utf8');
             bod["body"] = parsedBody
             return bod
@@ -133,9 +138,11 @@ function getStartsFromBlock(blockChain){
       }
     )
       return response.then(function(bod){
-        parsedBody = JSON.parse(bod["body"])
-        parsedBody["star"]["story"] = Buffer.from(parsedBody["star"]["story"], 'hex').toString('utf8');
-        bod["body"] = parsedBody
+        if (request.params.blockNumber > 0){
+          parsedBody = bod["body"]
+          parsedBody["star"]["story"] = Buffer.from(parsedBody["star"]["story"], 'hex').toString('utf8');
+          bod["body"] = parsedBody
+        }
         return bod
       })
     }
