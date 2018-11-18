@@ -27,7 +27,7 @@ function validSignatureResponse(address, whiteList){
     "address": address,
     "requestTimeStamp": whiteList[address]["requestTimeStamp"],
     "message": whiteList[address]["message"],
-    "validationWindow": acceptedDelay - currentTimestamp()-whiteList[address]["requestTimeStamp"],
+    "validationWindow": acceptedDelay - (currentTimestamp()-whiteList[address]["requestTimeStamp"]),
     "messageSignature": "valid"
   }
 }
