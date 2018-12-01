@@ -14,8 +14,6 @@ contract('StarNotary', accounts => {
         this.contract = await StarNotary.new({from: owner})
     })
 
-
-
     describe('can create a star', () => {
         it('can create a star and get its properties', async function () {
             await this.contract.createStar(name, story, dec, mag, ra, tokenId,{from: owner})
@@ -38,8 +36,10 @@ contract('StarNotary', accounts => {
 
     describe('checking ownership', () => {
         it('can check ownership', async function (){
+          user = accounts[1]
             await this.contract.createStar(name, story, dec, mag, ra, tokenId,{from: owner})
             assert.equal(await this.contract.ownerOf(tokenId, {from: owner}), owner);
+            assert.notEqual(await this.contract.ownerOf(tokenId, {from: owner}), user);
         })
     })
 
@@ -60,15 +60,41 @@ contract('StarNotary', accounts => {
             await this.contract.createStar(name, story, dec, mag, ra, tokenId,{from: owner})
             await this.contract.putStarUpForSale(tokenId, price, {from:owner})
             // makes sure the owner has the star
-            //assert.equal(await this.contract.ownerOf(tokenId), owner)
+            assert.equal(await this.contract.ownerOf(tokenId), owner)
             // buyer buys the star
             await this.contract.buyStar(tokenId, {from:buyer, value: 123, gasPrice: 0})
             // makes sure now buyer owns the star
-            //assert.equal(await this.contract.ownerOf(tokenId), buyer)
+            assert.equal(await this.contract.ownerOf(tokenId), buyer)
             // assert star is not for sale anymore
-            //assert.equal(await this.contract.starsForSale(tokenId), false)
+            assert.equal(await this.contract.starsForSale(tokenId), false)
         })
     })
 
+    describe('checking for approval', () => {
+        it('can approve an address', async function (){
+          approved = accounts[1]
+          notApproved = accounts[2]
+            await this.contract.createStar(name, story, dec, mag, ra, tokenId,{from: owner})
+            await this.contract.approve(approved, tokenId, {from: owner})
+            assert.equal(await this.contract.getApproved(tokenId), approved)
+            assert.notEqual(await this.contract.getApproved(tokenId), notApproved)
+        })
+    })
+
+    describe('checking for operator approval', () => {
+        it('can approve an operator', async function (){
+          aprovedOperator1 = accounts[1]
+          aprovedOperator2 = accounts[2]
+          notApprovedOperator = accounts[3]
+            await this.contract.createStar(name, story, dec, mag, ra, tokenId,{from: owner})
+            await this.contract.setApprovalForAll(aprovedOperator1, true, {from: owner})
+            await this.contract.setApprovalForAll(aprovedOperator2, true, {from: owner})
+
+            assert.equal(await this.contract.isApprovedForAll(owner, aprovedOperator1), true)
+            assert.equal(await this.contract.isApprovedForAll(owner, aprovedOperator2), true)
+            assert.equal(await this.contract.isApprovedForAll(owner, notApprovedOperator), false)
+
+        })
+    })
 
 })

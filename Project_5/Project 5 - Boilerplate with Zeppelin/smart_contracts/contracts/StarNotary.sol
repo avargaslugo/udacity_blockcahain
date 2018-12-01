@@ -70,12 +70,21 @@ contract StarNotary is ERC721 {
         // makes sure that the money being paid is greater than the price
         require(msg.value >= starCost, "not enough to buy this is star");
         // transfers star from owner to buyer
-        super.safeTransferFrom(starOwner, msg.sender, _tokenId);
-        
+        safeTransferFrom(starOwner, msg.sender, _tokenId);
+
         starOwner.transfer(starCost);
+        delete starsForSale[_tokenId];
         // in case the buyer over paid, it gets the extra money back
         if(msg.value > starCost) {
             msg.sender.transfer(msg.value - starCost);
         }
+    }
+
+    function safeTransferFrom(address _from, address _to, uint256 _tokenId) public{
+      require(_isApprovedOrOwner(_from, _tokenId));
+      _clearApproval(_from, _tokenId);
+      _removeTokenFrom(_from, _tokenId);
+      _addTokenTo(_to, _tokenId);
+      emit Transfer(_from, _to, _tokenId);
     }
 }
