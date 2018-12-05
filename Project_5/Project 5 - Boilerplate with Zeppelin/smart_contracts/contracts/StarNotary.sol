@@ -19,14 +19,14 @@ contract StarNotary is ERC721 {
     // this mapping tells you which star is for sale at which price
     mapping(uint256 => uint256) public starsForSale;
 
-    function createStarHashByCoordinates(string _Dec, string _Mag, string _Cent) public returns (bytes32){
+    function createStarHashByCoordinates(string _Dec, string _Mag, string _Cent) internal pure returns (bytes32){
       return sha256(abi.encodePacked(_Dec, _Mag, _Cent));
     }
 
     function createStar(string _name, string _story, string _Dec, string _Mag, string _Cent ,uint256 _tokenId) public {
         // checks if star is registered or not based on coordinates
         require(!this.checkIfStarExist(_Dec, _Mag, _Cent), "star has already been registered");
-        bytes32 starHash = this.createStarHashByCoordinates(_Dec, _Mag, _Cent);
+        bytes32 starHash = createStarHashByCoordinates(_Dec, _Mag, _Cent);
         // registeres the star coordinates before minting
         registeredStars[starHash] = true;
         // creates new Star
@@ -43,8 +43,8 @@ contract StarNotary is ERC721 {
       super._mint(msg.sender, _tokenId);
     }
 
-    function checkIfStarExist(string _Dec, string _Mag, string _Cent) public view returns (bool){
-      bytes32 starHash = this.createStarHashByCoordinates(_Dec, _Mag, _Cent);
+    function checkIfStarExist(string _Dec, string _Mag, string _Cent) public view  returns (bool){
+      bytes32 starHash = createStarHashByCoordinates(_Dec, _Mag, _Cent);
       return registeredStars[starHash];
     }
 
