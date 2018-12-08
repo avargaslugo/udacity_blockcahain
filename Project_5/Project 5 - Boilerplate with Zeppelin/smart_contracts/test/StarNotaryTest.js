@@ -28,6 +28,7 @@ contract('StarNotary', accounts => {
 
     describe('can tell if star exists', () => {
         it('can create a star and get its properties', async function (){
+            assert.equal(await this.contract.checkIfStarExist(dec, mag, ra), false);
             await this.contract.createStar(name, story, dec, mag, ra, tokenId,{from: owner})
             assert.equal(await this.contract.checkIfStarExist(mag, ra, dec), false);
             assert.equal(await this.contract.checkIfStarExist(dec, mag, ra), true);
