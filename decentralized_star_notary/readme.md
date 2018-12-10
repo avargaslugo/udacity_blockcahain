@@ -1,1 +1,3 @@
-contract address in Rinkeby: 0xb11be35b571e91208ccb3108117cdb95af6ed433
+contract address in Rinkeby: 0x9768a1732c206ce142008928a0af47af5a9bf375
+created star transaction: 0xc7a66558eaf56d13e52dcb478c32ada55f87e52f3f78b213a80ad328713c4937
+
