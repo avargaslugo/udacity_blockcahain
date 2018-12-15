@@ -34,7 +34,7 @@
 
           <h2>Get Star Info</h2>
 
-          <form action="javascript:getStarInfo()">
+          <form action="javascript:queryStar()">
             Star TokenID:<br>
             <input id=starinfo_id type="text" name="starid" value=""><br>
             <input type="submit" value="Get Star Info">
@@ -71,12 +71,19 @@
               <label id="star-cent"></label>
           </div>
 
+          <div class="row">
+              <label class="bold">Random:</label>
+              <label id="star-random"></label>
+          </div>
+
+          <button id="claim-button" onclick="claimButtonClicked()">Random Check</button>
         </div>
 
         <script>
 
             // Instantiate and set Ganache as your provider
-            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+            var provider = "http://localhost:8545"
+            web3 = new Web3(new Web3.providers.HttpProvider(provider));
             // The default (top) wallet account from a list of test accounts
             web3.eth.defaultAccount = web3.eth.accounts[0];
             // The interface definition for your smart contract (the ABI)
@@ -522,18 +529,20 @@
                 ]
             );
             // Grab the contract at specified deployed address with the interface defined by the ABI
-            var starNotary = StarNotary.at('0xd236a2fb7e88326cf783d121cb54827ffc0e06b7');
-
+            //var starNotary = StarNotary.at('0xd236a2fb7e88326cf783d121cb54827ffc0e06b7');
+            var starNotary = StarNotary.at('0xb11be35b571e91208ccb3108117cdb95af6ed433');
             // Get and display star name
 
             // Get and display star owner
-            starNotary.starOwner(function (error, result) {
+            starNotary.ownerOf(1, function (error, result) {
                 if (!error) {
                     document.getElementById('star-owner').innerText = result
                 } else {
                     console.log(error);
                 }
             });
+
+
             // Enable claim button being clicked
             function claimStar() {
               name = document.getElementById('starclaim_name').value
@@ -548,7 +557,34 @@
               document.getElementById('star-mag').innerText = mag
               document.getElementById('star-cent').innerText = cent
               document.getElementById('star-owner').innerText = tokenid
+
+              asdd = web3.eth.defaultAccount
+              document.getElementById('star-random').innerText = asdd
             }
+
+            function queryStar(){
+              tokenid = document.getElementById('starinfo_id').value
+              starNotary.ownerOf(tokenid, function (error, result) {
+                  if (!error) {
+                      document.getElementById('star-random').innerText = result
+                  } else {
+                      document.getElementById('star-random').innerText = "";
+                  }
+              });
+
+            }
+
+            function claimButtonClicked(){
+              starNotary.tokenIdToStarInfo(1, function (error, result) {
+                  if (!error) {
+                      document.getElementById('star-random').innerText = result.name
+                  } else {
+                      document.getElementById('star-random').innerText = "issue";
+                  }
+              });
+            }
+
+
         </script>
     </body>
 </html>
