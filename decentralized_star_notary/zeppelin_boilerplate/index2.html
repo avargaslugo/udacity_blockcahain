@@ -12,6 +12,12 @@
     <body>
         <div class="container">
           <h1>Star Notary</h1>
+
+          <div class="row">
+              <label class="bold">Notary Messages:</label>
+              <label id="star-messages"></label>
+          </div>
+
           <h2>Claim Your Star</h2>
 
           <form action="javascript:claimStar()">
@@ -71,10 +77,7 @@
               <label id="star-cent"></label>
           </div>
 
-          <div class="row">
-              <label class="bold">Random:</label>
-              <label id="star-random"></label>
-          </div>
+
 
           <button id="claim-button" onclick="claimButtonClicked()">Random Check</button>
         </div>
@@ -82,7 +85,8 @@
         <script>
 
             // Instantiate and set Ganache as your provider
-            var provider = "http://localhost:8545"
+            //var provider = "http://localhost:8545"
+            var provider = "https://rinkeby.infura.io/v3/df52c8543c084c78a9dd90cd46ca3752"
             web3 = new Web3(new Web3.providers.HttpProvider(provider));
             // The default (top) wallet account from a list of test accounts
             web3.eth.defaultAccount = web3.eth.accounts[0];
@@ -526,62 +530,91 @@
                     "stateMutability": "view",
                     "type": "function"
                   }
-                ]
+                ],
+
+                {"gas": 3000000}
             );
             // Grab the contract at specified deployed address with the interface defined by the ABI
-            //var starNotary = StarNotary.at('0xd236a2fb7e88326cf783d121cb54827ffc0e06b7');
-            var starNotary = StarNotary.at('0xb11be35b571e91208ccb3108117cdb95af6ed433');
-            // Get and display star name
 
-            // Get and display star owner
-            starNotary.ownerOf(1, function (error, result) {
-                if (!error) {
-                    document.getElementById('star-owner').innerText = result
-                } else {
-                    console.log(error);
-                }
-            });
-
+            //var starNotary = StarNotary.at('0xb11be35b571e91208ccb3108117cdb95af6ed433');
+            var starNotary = StarNotary.at('0x9768a1732c206ce142008928a0af47af5a9bf375');
 
             // Enable claim button being clicked
+
+            function resetFields(){
+              document.getElementById('star-owner').innerText = "";
+              document.getElementById('star-name').innerText = "";
+              document.getElementById('star-story').innerText = "";
+              document.getElementById('star-dec').innerText = "";
+              document.getElementById('star-mag').innerText = "";
+              document.getElementById('star-cent').innerText = "";
+              document.getElementById("star-messages").innerText = "";
+            }
+
             function claimStar() {
+              resetFields()
               name = document.getElementById('starclaim_name').value
               story = document.getElementById('starclaim_story').value
               dec = document.getElementById('starclaim_dec').value
               mag = document.getElementById('starclaim_mag').value
               cent = document.getElementById('starclaim_cent').value
               tokenid = document.getElementById('starclaim_id').value
-              document.getElementById('star-name').innerText = name
-              document.getElementById('star-story').innerText = story
-              document.getElementById('star-dec').innerText = dec
-              document.getElementById('star-mag').innerText = mag
-              document.getElementById('star-cent').innerText = cent
-              document.getElementById('star-owner').innerText = tokenid
 
-              asdd = web3.eth.defaultAccount
-              document.getElementById('star-random').innerText = asdd
+              starNotary.createStar(name, story, dec, mag, cent, tokenid, function (error, result){
+                if (!error) {
+                    document.getElementById("star-messages").innerText = "Star Created"
+                } else {
+                    document.getElementById("star-messages").innerText = error;
+                }
+              }
+            )
+
             }
 
             function queryStar(){
+              resetFields()
+              // gets token id to query
               tokenid = document.getElementById('starinfo_id').value
+              // diplays the owner of the token
               starNotary.ownerOf(tokenid, function (error, result) {
                   if (!error) {
-                      document.getElementById('star-random').innerText = result
+                      document.getElementById('star-owner').innerText = result
                   } else {
-                      document.getElementById('star-random').innerText = "";
+
                   }
               });
+              // displays rest of the information of the star
+              starNotary.tokenIdToStarInfo(tokenid, function (error, result) {
+                  if (!error) {
+                      document.getElementById('star-name').innerText = result[0];
+                      document.getElementById('star-story').innerText = result[1];
+                      document.getElementById('star-dec').innerText = result[2];
+                      document.getElementById('star-mag').innerText = result[3];
+                      document.getElementById('star-cent').innerText = result[4];
+                  } else {
+                    document.getElementById("star-messages").innerText = error;
+                  }
+              })
 
             }
 
+            // function to test different functionalities
             function claimButtonClicked(){
-              starNotary.tokenIdToStarInfo(1, function (error, result) {
-                  if (!error) {
-                      document.getElementById('star-random').innerText = result.name
-                  } else {
-                      document.getElementById('star-random').innerText = "issue";
-                  }
-              });
+              resetFields()
+              name = 'test_star'
+              story = 'random star'
+              dec = '4'
+              mag = '4'
+              cent = '4'
+              id = 4
+              starNotary.createStar(name, story, dec, mag, cent, id, function (error, result){
+                if (!error) {
+                    document.getElementById("star-messages").innerText = "Star Created"
+                } else {
+                    document.getElementById("star-messages").innerText = error;
+                }
+              }
+            )
             }
 
 
